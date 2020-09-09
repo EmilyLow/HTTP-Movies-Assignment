@@ -34,11 +34,28 @@ const AddMovie = props => {
 
     };
 
+    function actorChange(e) {
+        e.persist();
+
+        setActorString(e.target.value);
+    }
+
+    function convertActors() {
+        let tempString = actorString;
+        let actorArray = tempString.split(",");
+        console.log(actorArray);
+        setMovie({...movie, stars: actorArray});
+    }
+
+    //Async problems, how to make convertActors happen first and setIDCounter happen first
     function handleSubmit(e) {
+
         e.preventDefault();
         console.log("submit");
         setIdCounter(idCounter +1);
         setMovie({...movie, id:idCounter});
+
+        convertActors();
         
         axios
         .post("http://localhost:5000/api/movies", movie)
@@ -47,7 +64,8 @@ const AddMovie = props => {
         }))
         .catch((err) => console.log(err))
     };
-
+    
+  
 
     return(
         <div>
@@ -79,6 +97,15 @@ const AddMovie = props => {
                     name="metascore"
                     onChange={changeHandler}
                     value={movie.metascore}
+                    />
+               </label>
+               <label>
+                   Actors  
+                   <input
+                    type="text"
+                    name="actors"
+                    onChange={actorChange}
+                    value={actorString}
                     />
                </label>
                <button>Submit</button>
