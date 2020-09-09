@@ -40,38 +40,63 @@ const AddMovie = props => {
         setActorString(e.target.value);
     }
 
-    function convertActors() {
-        let tempString = actorString;
-        let actorArray = tempString.split(",");
-        console.log(actorArray);
-        setMovie({...movie, stars: actorArray});
-    }
+    // function convertActors() {
+    //     let tempString = actorString;
+    //     let actorArray = tempString.split(",");
+    //     console.log(actorArray);
+    //     setMovie({...movie, stars: actorArray});
+    // }
 
-    //Async problems, how to make convertActors happen first and setIDCounter happen first
-    function handleSubmit(e) {
+    //Async problems. Tried to use callback, but I'm failing to understand how this works. 
+    function handleSubmit(e, callback) {
 
         e.preventDefault();
         console.log("submit");
         setIdCounter(idCounter +1);
         setMovie({...movie, id:idCounter});
 
-        convertActors();
+       //Set actors based off string
+       let tempString = actorString;
+       let actorArray = tempString.split(",");
+       console.log(actorArray);
+       setMovie({...movie, stars: actorArray});
+
+       callback(); //postFunction. This doesn't work. 
         
+        
+       
+    };
+
+    function postFunction() {
+        console.log("Post function actors", movie.stars);
         axios
         .post("http://localhost:5000/api/movies", movie)
         .then((res => {
             console.log("Movies from post", res);
         }))
         .catch((err) => console.log(err))
-    };
+    }
+
     
+
+    
+    //Call back example
+    //The way they are all written inside each other is baffling. What would this look like if they werent'? 
+
+    // some_3secs_function(some_value, function() {
+    //     some_5secs_function(other_value, function() {
+    //       some_8secs_function(third_value, function() {
+    //         //All three functions have completed, in order.
+    //       });
+    //     });
+    //   });
   
 
     return(
         <div>
             <h2>Add Movie</h2>
 
-            <form onSubmit={handleSubmit} className="update-form">
+            <form onSubmit={(event) => handleSubmit(event, postFunction)} className="update-form">
                <label>
                    Title  
                    <input
